@@ -2514,7 +2514,7 @@ peermsgs_destruct (tr_peer * peer)
   if (msgs->io)
     {
       tr_peerIoClear (msgs->io);
-      tr_peerIoUnref (msgs->io); /* balanced by the ref in handshakeDoneCB () */
+      tr_ref_dec (msgs->io); /* balanced by the ref in handshakeDoneCB () */
     }
 
   evbuffer_free (msgs->outMessages);

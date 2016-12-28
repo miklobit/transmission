@@ -22,6 +22,7 @@
 #include "bandwidth.h"
 #include "crypto.h"
 #include "net.h" /* tr_address */
+#include "ref.h"
 #include "utils.h" /* tr_time () */
 
 struct evbuffer;
@@ -66,6 +67,8 @@ typedef void (*tr_net_error_cb)(struct tr_peerIo * io,
 
 typedef struct tr_peerIo
 {
+    tr_ref                ref;
+
     bool                  isEncrypted;
     bool                  isIncoming;
     bool                  peerIdIsSet;
@@ -86,8 +89,6 @@ typedef struct tr_peerIo
     tr_port               port;
     tr_socket_t           socket;
     struct UTPSocket    * utp_socket;
-
-    int                   refCount;
 
     uint8_t               peerId[SHA_DIGEST_LENGTH];
     time_t                timeCreated;
@@ -133,18 +134,6 @@ tr_peerIo*  tr_peerIoNewIncoming (tr_session              * session,
                                   tr_socket_t               socket,
                                   struct UTPSocket *        utp_socket);
 
-void tr_peerIoRefImpl            (const char              * file,
-                                  int                       line,
-                                  tr_peerIo               * io);
-
-#define tr_peerIoRef(io) tr_peerIoRefImpl (__FILE__, __LINE__, (io));
-
-void tr_peerIoUnrefImpl          (const char              * file,
-                                  int                       line,
-                                  tr_peerIo               * io);
-
-#define tr_peerIoUnref(io) tr_peerIoUnrefImpl (__FILE__, __LINE__, (io));
-
 #define PEER_IO_MAGIC_NUMBER 206745
 
 static inline bool
@@ -152,7 +141,6 @@ tr_isPeerIo (const tr_peerIo * io)
 {
     return (io != NULL)
         && (io->magicNumber == PEER_IO_MAGIC_NUMBER)
-        && (io->refCount >= 0)
         && (tr_isBandwidth (&io->bandwidth))
         && (tr_address_is_valid (&io->addr));
 }

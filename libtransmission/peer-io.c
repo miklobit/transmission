@@ -187,7 +187,7 @@ canReadWrapper (tr_peerIo * io)
 
     dbgmsg (io, "canRead");
 
-    tr_peerIoRef (io);
+    tr_ref_inc (io);
 
     session = io->session;
 
@@ -241,7 +241,7 @@ canReadWrapper (tr_peerIo * io)
         tr_sessionUnlock (session);
     }
 
-    tr_peerIoUnref (io);
+    tr_ref_dec (io);
 }
 
 static void
@@ -580,6 +580,15 @@ static struct UTPFunctionTable dummy_utp_function_table = {
 
 #endif /* #ifdef WITH_UTP */
 
+static void
+tr_peerIoFree (tr_peerIo * io);
+
+static const tr_ref_vftbl peer_io_vftbl =
+{
+  .free = (tr_ref_free_func) &tr_peerIoFree,
+  .to_string = (tr_ref_to_string_func) &tr_peerIoGetAddrStr
+};
+
 static tr_peerIo*
 tr_peerIoNew (tr_session       * session,
               tr_bandwidth     * parent,
@@ -610,7 +619,7 @@ tr_peerIoNew (tr_session       * session,
 
     io = tr_new0 (tr_peerIo, 1);
     io->magicNumber = PEER_IO_MAGIC_NUMBER;
-    io->refCount = 1;
+    tr_ref_init (io, &peer_io_vftbl);
     tr_cryptoConstruct (&io->crypto, torrentHash, isIncoming);
     io->session = session;
     io->addr = *addr;
@@ -846,29 +855,6 @@ tr_peerIoFree (tr_peerIo * io)
         io->gotError = NULL;
         tr_runInEventThread (io->session, io_dtor, io);
     }
-}
-
-void
-tr_peerIoRefImpl (const char * file, int line, tr_peerIo * io)
-{
-    assert (tr_isPeerIo (io));
-
-    dbgmsg (io, "%s:%d is incrementing the IO's refcount from %d to %d",
-                file, line, io->refCount, io->refCount+1);
-
-    ++io->refCount;
-}
-
-void
-tr_peerIoUnrefImpl (const char * file, int line, tr_peerIo * io)
-{
-    assert (tr_isPeerIo (io));
-
-    dbgmsg (io, "%s:%d is decrementing the IO's refcount from %d to %d",
-                file, line, io->refCount, io->refCount-1);
-
-    if (!--io->refCount)
-        tr_peerIoFree (io);
 }
 
 const tr_address*

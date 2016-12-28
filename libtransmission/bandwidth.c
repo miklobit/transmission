@@ -253,7 +253,7 @@ tr_bandwidthAllocate (tr_bandwidth  * b,
   for (i=0; i<peerCount; ++i)
     {
       tr_peerIo * io = peers[i];
-      tr_peerIoRef (io);
+      tr_ref_inc (io);
 
       tr_peerIoFlushOutgoingProtocolMsgs (io);
 
@@ -281,7 +281,7 @@ tr_bandwidthAllocate (tr_bandwidth  * b,
     tr_peerIoSetEnabled (peers[i], dir, tr_peerIoHasBandwidthLeft (peers[i], dir));
 
   for (i=0; i<peerCount; ++i)
-    tr_peerIoUnref (peers[i]);
+    tr_ref_dec (peers[i]);
 
   /* cleanup */
   tr_ptrArrayDestruct (&normal, NULL);

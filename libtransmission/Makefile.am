@@ -52,6 +52,7 @@ libtransmission_a_SOURCES = \
   port-forwarding.c \
   ptrarray.c \
   quark.c \
+  ref.c \
   resume.c \
   rpcimpl.c \
   rpc-server.c \
@@ -149,6 +150,7 @@ noinst_HEADERS = \
   port-forwarding.h \
   ptrarray.h \
   quark.h \
+  ref.h \
   resume.h \
   rpcimpl.h \
   rpc-server.h \
@@ -190,6 +192,7 @@ TESTS = \
   move-test \
   peer-msgs-test \
   quark-test \
+  ref-test \
   rename-test \
   rpc-test \
   session-test \
@@ -273,6 +276,10 @@ move_test_LDFLAGS = ${apps_ldflags}
 peer_msgs_test_SOURCES = peer-msgs-test.c $(TEST_SOURCES)
 peer_msgs_test_LDADD = ${apps_ldadd}
 peer_msgs_test_LDFLAGS = ${apps_ldflags}
+
+ref_test_SOURCES = ref-test.c $(TEST_SOURCES)
+ref_test_LDADD = ${apps_ldadd}
+ref_test_LDFLAGS = ${apps_ldflags}
 
 rpc_test_SOURCES = rpc-test.c $(TEST_SOURCES)
 rpc_test_LDADD = ${apps_ldadd}

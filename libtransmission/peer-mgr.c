@@ -2098,7 +2098,7 @@ tr_peerMgrAddIncoming (tr_peerMgr       * manager,
                                    myHandshakeDoneCB,
                                    manager);
 
-      tr_peerIoUnref (io); /* balanced by the implicit ref in tr_peerIoNewIncoming () */
+      tr_ref_dec (io); /* balanced by the implicit ref in tr_peerIoNewIncoming () */
 
       tr_ptrArrayInsertSorted (&manager->incomingHandshakes, handshake,
                                handshakeCompare);
@@ -4042,7 +4042,7 @@ initiateConnection (tr_peerMgr * mgr, tr_swarm * s, struct peer_atom * atom)
 
       assert (tr_peerIoGetTorrentHash (io));
 
-      tr_peerIoUnref (io); /* balanced by the initial ref
+      tr_ref_dec (io); /* balanced by the initial ref
                               in tr_peerIoNewOutgoing () */
 
       tr_ptrArrayInsertSorted (&s->outgoingHandshakes, handshake,

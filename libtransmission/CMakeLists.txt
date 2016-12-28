@@ -42,6 +42,7 @@ set(${PROJECT_NAME}_SOURCES
     port-forwarding.c
     ptrarray.c
     quark.c
+    ref.c
     resume.c
     rpcimpl.c
     rpc-server.c
@@ -105,6 +106,7 @@ set(${PROJECT_NAME}_PUBLIC_HEADERS
     log.h
     makemeta.h
     quark.h
+    ref.h
     rpcimpl.h
     session-id.h
     tr-getopt.h
@@ -274,8 +276,8 @@ if(ENABLE_TESTS)
 
     set(watchdir@generic-test_DEFINITIONS WATCHDIR_TEST_FORCE_GENERIC)
 
-    foreach(T bitfield blocklist clients crypto error file history json magnet metainfo move peer-msgs quark rename rpc session
-              tr-getopt utils variant watchdir watchdir@generic)
+    foreach(T bitfield blocklist clients crypto error file history json magnet metainfo move peer-msgs quark ref rename rpc
+              session tr-getopt utils variant watchdir watchdir@generic)
         set(TP ${TR_NAME}-test-${T})
         if(T MATCHES "^([^@]+)@.+$")
             string(REPLACE "@" "_" TP "${TP}")

@@ -1088,9 +1088,7 @@ fireDoneFunc (tr_handshake * handshake, bool isConnected)
 static void
 tr_handshakeFree (tr_handshake * handshake)
 {
-  if (handshake->io)
-    tr_peerIoUnref (handshake->io); /* balanced by the ref in tr_handshakeNew */
-
+  tr_ref_dec (handshake->io); /* balanced by the ref in tr_handshakeNew */
   event_free (handshake->timeout_timer);
   tr_free (handshake);
 }
@@ -1202,7 +1200,7 @@ tr_handshakeNew (tr_peerIo           * io,
   handshake->timeout_timer = evtimer_new (session->event_base, handshakeTimeout, handshake);
   tr_timerAdd (handshake->timeout_timer, HANDSHAKE_TIMEOUT_SEC, 0);
 
-  tr_peerIoRef (io); /* balanced by the unref in tr_handshakeFree */
+  tr_ref_inc (io); /* balanced by the unref in tr_handshakeFree */
   tr_peerIoSetIOFuncs (handshake->io, canRead, NULL, gotError, handshake);
   tr_peerIoSetEncryption (io, PEER_ENCRYPTION_NONE);
 
